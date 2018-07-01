@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <item name="button_layer" type="id">button_layout</item>
+    <item name="button_layout" type="id">b_layout</item>
+</resources>
