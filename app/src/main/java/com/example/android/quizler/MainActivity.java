@@ -4,7 +4,6 @@ import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ProgressBar;
@@ -17,7 +16,7 @@ public class MainActivity extends AppCompatActivity {
 
     // TODO: Declare constants here
 
-    Button aButton,bButton,cButton,dButton;
+    Button true_button, false_button,instructionButton,testButton,exitButton,instPlayButton,instExitButton;
     TextView questionView;
     int questionIndex;
     int question;
@@ -39,10 +38,7 @@ public class MainActivity extends AppCompatActivity {
             new QuestionTemp(R.string.question_7, true),
             new QuestionTemp(R.string.question_8, false),
             new QuestionTemp(R.string.question_9, true),
-            new QuestionTemp(R.string.question_10, true),
-            new QuestionTemp(R.string.question_11, false),
-            new QuestionTemp(R.string.question_12, false),
-            new QuestionTemp(R.string.question_13,true)
+            new QuestionTemp(R.string.question_10, true)
     };
     final int progressBarIncrease= (int)Math.ceil(100.0/questionBank.length);
 
@@ -54,30 +50,82 @@ public class MainActivity extends AppCompatActivity {
         if(savedInstanceState !=null){
             score =savedInstanceState.getInt("scoreKey");
             questionIndex = savedInstanceState.getInt("questionKey");
+            question = questionBank[questionIndex].getQuestionId();
+
+            questionView.setText(question);
+
+            viewScore.setText("Score" + score + "/" + questionBank.length);
         }
         else {
             score = 0;
         }
-        aButton = (Button)findViewById(R.id.b_button);
-        bButton = (Button)findViewById(R.id.a_button);
-        questionView = (TextView)findViewById(R.id.question_text_view);
-        progressBar = (ProgressBar)findViewById(R.id.progress_bar);
-        viewScore = (TextView)findViewById(R.id.score);
 
-        question = questionBank[questionIndex].getQuestionId();
+        mainActivityControl();
 
-        questionView.setText(question);
+    }
 
-        viewScore.setText("Score" + score+ "/"+questionBank.length);
+    public void mainActivityControl() {
 
-        aButton.setOnClickListener(new View.OnClickListener(){
+
+        instructionButton = (Button) findViewById(R.id.instruction);
+        testButton = (Button) findViewById(R.id.test);
+        exitButton = (Button) findViewById(R.id.exit);
+        instructionButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                setContentView(R.layout.instruction);
+                instPlayButton = (Button)findViewById(R.id.play_button);
+                instExitButton = (Button)findViewById(R.id.exit_button);
+
+                instPlayButton.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        questionActivity();
+                    }
+                });
+
+                instExitButton.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        Toast.makeText(getApplicationContext(),"Good Bye", Toast.LENGTH_SHORT);
+                        finish();
+                    }
+                });
+            }
+        });
+
+        testButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                questionActivity();
+            }
+        });
+
+        exitButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                finish();
+            }
+        });
+
+    }
+    public void questionActivity(){
+
+        setContentView(R.layout.question);
+
+        true_button = (Button) findViewById(R.id.true_button);
+        false_button = (Button) findViewById(R.id.false_button);
+        questionView = (TextView) findViewById(R.id.question_text_view);
+        progressBar = (ProgressBar) findViewById(R.id.progress_bar);
+        viewScore = (TextView) findViewById(R.id.score);
+        true_button.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View view){
                 verifyAnswer(true);
                 nextQuestion();
             }
         });
-        bButton.setOnClickListener(new View.OnClickListener() {
+        false_button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 verifyAnswer(false);
@@ -86,8 +134,6 @@ public class MainActivity extends AppCompatActivity {
         });
         QuestionTemp question = new QuestionTemp(R.string.question_1,true);
         Random choseQuestion = new Random();
-
-
     }
 
     public  void nextQuestion(){
@@ -96,7 +142,13 @@ public class MainActivity extends AppCompatActivity {
         if (questionIndex ==0){
             AlertDialog.Builder alert = new AlertDialog.Builder(this);
             alert.setTitle("Game Over");
-            alert.setMessage("Your Score is "+ score+"points");
+            if (score > 6) {
+                alert.setMessage("Wow, Excellent marks! you scored " + score + " points.");
+            }
+            else {
+                alert.setMessage("You scored "+score+" points");
+            }
+            alert.setCancelable(false);
             alert.setPositiveButton("Close App", new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
@@ -116,11 +168,11 @@ public class MainActivity extends AppCompatActivity {
         boolean rightAnwser = questionBank[questionIndex].isAnswer();
         if(userAnswer ==rightAnwser){
             score = (score + 1);
-            Toast.makeText(getApplicationContext(),"Correct",Toast.LENGTH_SHORT).show();
+            Toast.makeText(getApplicationContext(),"Answer is correct",Toast.LENGTH_SHORT).show();
         }
         else {
 
-            Toast.makeText(getApplicationContext(),"Not Correct",Toast.LENGTH_SHORT).show();
+            Toast.makeText(getApplicationContext(),"Answer is wrong",Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -130,4 +182,5 @@ public class MainActivity extends AppCompatActivity {
     outState.putInt("scoreKey",score);
     outState.putInt("questionKey",questionIndex);
     }
+
 }
